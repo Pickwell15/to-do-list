@@ -31,12 +31,6 @@ from asyncio import run as async_run
 
 class Main:
     """
-    ATTRIBUTES
-    ---------------
-    PRIVATE | __TODO_DIR : str
-    PRIVATE | __MENU_ITEMS : str
-    PRIVATE | __MAX_LINE_LENGTH : int
-
     METHODS
     ---------------
     PRIVATE | __new__ -> object
@@ -68,7 +62,7 @@ class Main:
         :return: None
         """
 
-        self._todo: list = [eval(item) for item in self.read_json(Const.todo_dir)]  # initialises local list
+        self._todo: list = [eval(item) for item in self.read_json(Const.TODO_DIR.value)]  # initialises local list
 
     def __str__(self) -> str:
         """
@@ -77,7 +71,7 @@ class Main:
         :return: str
         """
 
-        return f"Main class. Reading from: '{Const.todo_dir}'"
+        return f"Main class. Reading from: '{Const.TODO_DIR.value}'"
 
     def run(self) -> None:
         """
@@ -98,7 +92,7 @@ class Main:
         while 1:
             sleep(0.5)
             print("\nPlease enter the number of the function you would like to execute:")
-            for index, item in enumerate(Const):
+            for index, item in enumerate(Const.MENU_ITEMS.value):
                 print(f"\t[{index+1}] {item}")
             sleep(0.5)
 
@@ -113,9 +107,9 @@ class Main:
                     case 4:
                         die()
                     case _:
-                        print(Err.invalid_menu_number)
+                        print(Err.INVALID_MENU_NUMBER.value)
             except ValueError:
-                print(Err.invalid_menu_number)
+                print(Err.INVALID_MENU_NUMBER.value)
 
     def _display(self) -> None:
         """
@@ -135,10 +129,10 @@ class Main:
                 else:
                     print(f"\t\t{item.body}")
                 '''
-                print('\n'.join([f"\t\t{item.body[i:i+Const.max_line_length]}" for i in range(0, len(item.body), Const.max_line_length)])) if len(item.body) > Const.max_line_length else print(f"\t\t{item.body}")
+                print('\n'.join([f"\t\t{item.body[i:i+Const.MAX_LINE_LENGTH.value]}" for i in range(0, len(item.body), Const.MAX_LINE_LENGTH.value)])) if len(item.body) > Const.MAX_LINE_LENGTH.value else print(f"\t\t{item.body}")
                 print() if index != len(self._todo) else None
         else:
-            print(Err.no_todo_items_found)
+            print(Err.NO_TODO_ITEMS_FOUND.value)
 
     def _create(self) -> None:
         """
@@ -154,14 +148,14 @@ class Main:
             if title:
                 break
             else:
-                print(Err.empty_title)
+                print(Err.EMPTY_TITLE.value)
 
         while 1:
             body: str = input("\tEnter the body of the to-do: ").capitalize()
             if body:
                 break
             else:
-                print(Err.empty_body)
+                print(Err.EMPTY_BODY.value)
 
         self._todo.append(ToDo(title, body))  # add to local list
         async_run(self._save())  # save to file
@@ -182,9 +176,9 @@ class Main:
                 self._todo.pop(index)  # remove contact from list
                 async_run(self._save())  # save to file
             else:
-                print(Err.invalid_item_number)
+                print(Err.INVALID_ITEM_NUMBER.value)
         except ValueError:
-            print(Err.invalid_item_number)
+            print(Err.INVALID_ITEM_NUMBER.value)
 
     async def _save(self) -> None:
         """
@@ -194,7 +188,7 @@ class Main:
         :return: None
         """
 
-        open(Const.todo_dir, "w").write(dumps([repr(item) for item in self._todo], sort_keys=True, indent=4))
+        open(Const.TODO_DIR.value, "w").write(dumps([repr(item) for item in self._todo], sort_keys=True, indent=4))
 
     @classmethod
     def read_json(cls, path: str) -> list | dict:
@@ -206,7 +200,7 @@ class Main:
 
         :return: Union[list, dict]
         """
-        return loads(open(path, "r").read()) if Path(path).is_file() else die(Err.file_not_found.format(path))
+        return loads(open(path, "r").read()) if Path(path).is_file() else die(Err.FILE_NOT_FOUND.value.format(path))
 
 
 def run() -> None:

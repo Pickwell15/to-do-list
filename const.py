@@ -17,40 +17,42 @@ class Const(Enum):
 	"""
 	ATTRIBUTES
 	----------------
-	PUBLIC | todo_dir : str
-	PUBLIC | menu_item : tuple[str, ...]
-	PUBLIC | max_line_length : int
+	PUBLIC | TODO_DIR : str
+	PUBLIC | MENU_ITEMS : tuple[str, ...]
+	PUBLIC | MAX_LINE_LENGTH : int
 	"""
 
 	# file directories
-	todo_dir: str = r"./todo.json"
+	TODO_DIR = r"./todo.json"
 
 	# menu
-	menu_items: tuple[str, ...] = ("View items", "New item", "Delete item", "Quit")
+	MENU_ITEMS = ("View items", "New item", "Delete item", "Quit")
 
 	# max lengths
-	max_line_length: int = 85
+	MAX_LINE_LENGTH = 85
 
 
 # error messages
 class Err(Enum):
 	"""
-	PUBLIC | invalid_menu_number : str
-	PUBLIC | invalid_item_number : str
-	PUBLIC | no_todo_items_found : str
-	PUBLIC | file_not_found : str
-	PUBLIC | empty_title : str
-	PUBLIC | empty_body : str
+	ATTRIBUTES
+	--------------
+	PUBLIC | INVALID_MENU_NUMBER : str
+	PUBLIC | INVALID_ITEM_NUMBER : str
+	PUBLIC | NO_TODO_ITEMS_FOUNDS : str
+	PUBLIC | FILE_NOT_FOUND : str
+	PUBLIC | EMPTY_TITLE : str
+	PUBLIC | EMPTY_BODY : str
 	"""
 
 	# invalid
-	invalid_menu_number: str = "\nERROR: Invalid number entered. Please try again..."
-	invalid_item_number: str = "\nERROR: Invalid item number. Please try again..."
+	INVALID_MENU_NUMBER = "\nERROR: Invalid number entered. Please try again..."
+	INVALID_ITEM_NUMBER = "\nERROR: Invalid item number. Please try again..."
 
 	# not found
-	no_todo_items_found: str = "\nERROR: No to-do items found. Try creating one..."
-	file_not_found: str = "\nERROR: File {} not found"
+	NO_TODO_ITEMS_FOUND = "\nERROR: No to-do items found. Try creating one..."
+	FILE_NOT_FOUND = "\nERROR: File {} not found"
 
 	# empty
-	empty_title: str = "\nERROR: Invalid input. Title was left empty. Please try again..."
-	empty_body: str = "\nERROR: Invalid input. Body was left empty. Please try again..."
+	EMPTY_TITLE = "\nERROR: Invalid input. Title was left empty. Please try again..."
+	EMPTY_ROOM = "\nERROR: Invalid input. Body was left empty. Please try again..."
