@@ -10,6 +10,7 @@ PUBLIC | Main
 MODULES
 ---------------
 LOCAL | todo -> ToDo
+LOCAL | const -> Const, Err
 EXTERNAL | typing -> Union
 EXTERNAL | sys -> exit
 EXTERNAL | time -> sleep
@@ -19,8 +20,8 @@ EXTERNAL | asyncio -> run
 """
 
 from todo import ToDo
+from const import Const, Err
 
-from typing import Union
 from sys import exit as die
 from time import sleep
 from json import loads, dumps
@@ -47,17 +48,8 @@ class Main:
     PRIVATE | _create -> None
     PRIVATE | _delete -> None
     PRIVATE | _save -> None
-    PUBLIC | read_json -> Union[list, dict]
+    PUBLIC | read_json -> list | dict
     """
-
-    # file directories
-    __TODO_DIR: str = r"./todo.json"
-
-    # menu
-    __MENU_ITEMS: tuple[str, ...] = ("View items", "New item", "Delete item", "Quit")
-
-    # max lengths
-    __MAX_LINE_LENGTH: int = 85
 
     def __new__(cls) -> object:
         """
@@ -76,7 +68,7 @@ class Main:
         :return: None
         """
 
-        self._todo: list = [eval(item) for item in self.read_json(self.__TODO_DIR)]  # initialises local list
+        self._todo: list = [eval(item) for item in self.read_json(Const.todo_dir)]  # initialises local list
 
     def __str__(self) -> str:
         """
@@ -85,7 +77,7 @@ class Main:
         :return: str
         """
 
-        return f"Main class. Reading from: '{self.__TODO_DIR}'"
+        return f"Main class. Reading from: '{Const.todo_dir}'"
 
     def run(self) -> None:
         """
@@ -106,7 +98,7 @@ class Main:
         while 1:
             sleep(0.5)
             print("\nPlease enter the number of the function you would like to execute:")
-            for index, item in enumerate(self.__MENU_ITEMS):
+            for index, item in enumerate(Const):
                 print(f"\t[{index+1}] {item}")
             sleep(0.5)
 
@@ -121,9 +113,9 @@ class Main:
                     case 4:
                         die()
                     case _:
-                        print("\nERROR: Invalid number entered. Please try again...")
+                        print(Err.invalid_menu_number)
             except ValueError:
-                print("\nERROR: Invalid number entered. Please try again...")
+                print(Err.invalid_menu_number)
 
     def _display(self) -> None:
         """
@@ -143,10 +135,10 @@ class Main:
                 else:
                     print(f"\t\t{item.body}")
                 '''
-                print('\n'.join([f"\t\t{item.body[i:i+self.__MAX_LINE_LENGTH]}" for i in range(0, len(item.body), self.__MAX_LINE_LENGTH)])) if len(item.body) > self.__MAX_LINE_LENGTH else print(f"\t\t{item.body}")
+                print('\n'.join([f"\t\t{item.body[i:i+Const.max_line_length]}" for i in range(0, len(item.body), Const.max_line_length)])) if len(item.body) > Const.max_line_length else print(f"\t\t{item.body}")
                 print() if index != len(self._todo) else None
         else:
-            print("ERROR: No to-do items found. Try creating one...")
+            print(Err.no_todo_items_found)
 
     def _create(self) -> None:
         """
@@ -162,14 +154,14 @@ class Main:
             if title:
                 break
             else:
-                print("\nERROR: Invalid input. Title was left empty. Please try again...")
+                print(Err.empty_title)
 
         while 1:
             body: str = input("\tEnter the body of the to-do: ").capitalize()
             if body:
                 break
             else:
-                print("\nERROR: Invalid input. Body was left empty. Please try again...")
+                print(Err.empty_body)
 
         self._todo.append(ToDo(title, body))  # add to local list
         async_run(self._save())  # save to file
@@ -190,9 +182,9 @@ class Main:
                 self._todo.pop(index)  # remove contact from list
                 async_run(self._save())  # save to file
             else:
-                print("ERROR: Invalid item number. Please try again...")
+                print(Err.invalid_item_number)
         except ValueError:
-            print("ERROR: Invalid item number. Please try again...")
+            print(Err.invalid_item_number)
 
     async def _save(self) -> None:
         """
@@ -202,10 +194,10 @@ class Main:
         :return: None
         """
 
-        open(self.__TODO_DIR, "w").write(dumps([repr(item) for item in self._todo], sort_keys=True, indent=4))
+        open(Const.todo_dir, "w").write(dumps([repr(item) for item in self._todo], sort_keys=True, indent=4))
 
     @classmethod
-    def read_json(cls, path: str) -> Union[list, dict]:
+    def read_json(cls, path: str) -> list | dict:
         """
         Returns JSON data from a specified file if the file exists.
         Else exits program and displays error.
@@ -214,7 +206,7 @@ class Main:
 
         :return: Union[list, dict]
         """
-        return loads(open(path, "r").read()) if Path(path).is_file() else die(f"Unable to locate file: {path}")
+        return loads(open(path, "r").read()) if Path(path).is_file() else die(Err.file_not_found.format(path))
 
 
 def run() -> None:
